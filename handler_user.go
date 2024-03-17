@@ -10,7 +10,7 @@ import (
 	"github.com/kittanutp/rss-agg/internal/database"
 )
 
-func (apiCfg *apiConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
+func (cfg *apiConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 	type parameter struct {
 		Name string `json:"name"`
 	}
@@ -18,7 +18,7 @@ func (apiCfg *apiConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Reques
 	params := parameter{}
 	decodeJSON(w, r, &params)
 
-	user, user_err := apiCfg.DB.CreateUser(r.Context(), database.CreateUserParams{
+	user, user_err := cfg.DB.CreateUser(r.Context(), database.CreateUserParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
@@ -33,6 +33,6 @@ func (apiCfg *apiConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Reques
 	respondWithJSON(w, 201, convertUserResponse(user))
 }
 
-func (apiCfg *apiConfig) HandlerGetUser(w http.ResponseWriter, r *http.Request, user database.User) {
+func (cfg *apiConfig) HandlerGetUser(w http.ResponseWriter, r *http.Request, user database.User) {
 	respondWithJSON(w, 200, convertUserResponse(user))
 }

@@ -10,7 +10,7 @@ import (
 	"github.com/kittanutp/rss-agg/internal/database"
 )
 
-func (apiCfg *apiConfig) HandlerCreateFeed(w http.ResponseWriter, r *http.Request, user database.User) {
+func (cfg *apiConfig) HandlerCreateFeed(w http.ResponseWriter, r *http.Request, user database.User) {
 	type parameter struct {
 		Name string `json:"name"`
 		Url  string `json:"url"`
@@ -19,7 +19,7 @@ func (apiCfg *apiConfig) HandlerCreateFeed(w http.ResponseWriter, r *http.Reques
 	params := parameter{}
 	decodeJSON(w, r, &params)
 
-	feed, feed_err := apiCfg.DB.CreateFeed(r.Context(), database.CreateFeedParams{
+	feed, feed_err := cfg.DB.CreateFeed(r.Context(), database.CreateFeedParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
@@ -36,8 +36,8 @@ func (apiCfg *apiConfig) HandlerCreateFeed(w http.ResponseWriter, r *http.Reques
 	respondWithJSON(w, 200, convertFeedResponse(feed))
 }
 
-func (apiCfg *apiConfig) HandlerGetFeeds(w http.ResponseWriter, r *http.Request) {
-	feeds, feed_err := apiCfg.DB.GetFeeds(r.Context())
+func (cfg *apiConfig) HandlerGetFeeds(w http.ResponseWriter, r *http.Request) {
+	feeds, feed_err := cfg.DB.GetFeeds(r.Context())
 	if feed_err != nil {
 		log.Println("Unable to get feeds as:", feed_err)
 		respondWithError(w, 400, fmt.Sprintf("Unable to get feeds as: %v", feed_err))

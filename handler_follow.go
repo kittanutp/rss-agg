@@ -11,14 +11,14 @@ import (
 	"github.com/kittanutp/rss-agg/internal/database"
 )
 
-func (apiCfg *apiConfig) HandlerFollow(w http.ResponseWriter, r *http.Request, user database.User) {
+func (cfg *apiConfig) HandlerFollow(w http.ResponseWriter, r *http.Request, user database.User) {
 	type parameter struct {
 		FeedID uuid.UUID `json:"feed_id"`
 	}
 
 	params := parameter{}
 	decodeJSON(w, r, &params)
-	folow, err := apiCfg.DB.Folows(r.Context(), database.FolowsParams{
+	folow, err := cfg.DB.Folows(r.Context(), database.FolowsParams{
 		CreatedAt: time.Now().UTC(),
 		FeedID:    params.FeedID,
 		UserID:    user.ID,
@@ -32,9 +32,9 @@ func (apiCfg *apiConfig) HandlerFollow(w http.ResponseWriter, r *http.Request, u
 	respondWithJSON(w, 200, convertFollowResponse(folow))
 }
 
-func (apiCfg *apiConfig) HandlerGetFollowFeeds(w http.ResponseWriter, r *http.Request, user database.User) {
+func (cfg *apiConfig) HandlerGetFollowFeeds(w http.ResponseWriter, r *http.Request, user database.User) {
 
-	feeds, err := apiCfg.DB.GetFollowFeeds(r.Context(), user.ID)
+	feeds, err := cfg.DB.GetFollowFeeds(r.Context(), user.ID)
 	if err != nil {
 		log.Println("Unable to create feed as:", err)
 		respondWithError(w, 400, fmt.Sprintf("Unable to get feeds as: %v", err))

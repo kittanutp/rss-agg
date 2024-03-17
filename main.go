@@ -39,7 +39,7 @@ func main() {
 		log.Fatal("Unable to connect database as :", db_err)
 	}
 
-	apiCfg := apiConfig{
+	cfg := apiConfig{
 		DB: database.New(conn),
 	}
 
@@ -52,15 +52,15 @@ func main() {
 	r.Get("/test-error", func(w http.ResponseWriter, r *http.Request) { respondWithError(w, 400, "test-error") })
 
 	userRouter := chi.NewRouter()
-	userRouter.Post("/new", apiCfg.HandlerCreateUser)
-	userRouter.Get("/info", apiCfg.middlewareAuth(apiCfg.HandlerGetUser))
+	userRouter.Post("/new", cfg.HandlerCreateUser)
+	userRouter.Get("/info", cfg.middlewareAuth(cfg.HandlerGetUser))
 
 	feedRouter := chi.NewRouter()
-	feedRouter.Post("/new", apiCfg.middlewareAuth(apiCfg.HandlerCreateFeed))
-	feedRouter.Post("/follow", apiCfg.middlewareAuth(apiCfg.HandlerFollow))
-	feedRouter.Get("/follow", apiCfg.middlewareAuth(apiCfg.HandlerGetFollowFeeds))
-	feedRouter.Delete("/follow/{feedFollowID}", apiCfg.middlewareAuth(apiCfg.handlerFeedFollowDelete))
-	feedRouter.Get("/all", apiCfg.HandlerGetFeeds)
+	feedRouter.Post("/new", cfg.middlewareAuth(cfg.HandlerCreateFeed))
+	feedRouter.Post("/follow", cfg.middlewareAuth(cfg.HandlerFollow))
+	feedRouter.Get("/follow", cfg.middlewareAuth(cfg.HandlerGetFollowFeeds))
+	feedRouter.Delete("/follow/{feedFollowID}", cfg.middlewareAuth(cfg.handlerFeedFollowDelete))
+	feedRouter.Get("/all", cfg.HandlerGetFeeds)
 
 	r.Mount("/user", userRouter)
 	r.Mount("/feed", feedRouter)
@@ -72,6 +72,10 @@ func main() {
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
+
+	const collectionConcurrency = 10
+	const collectionInterval = time.Minute
+	go startScraping(cfg.DB, collectionConcurrency, collectionInterval)
 
 	err := srv.ListenAndServe()
 	if err != nil {
