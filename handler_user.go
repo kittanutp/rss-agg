@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/kittanutp/rss-agg/internal/auth"
 	"github.com/kittanutp/rss-agg/internal/database"
 )
 
@@ -38,23 +37,9 @@ func (apiCfg *apiConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	respondWithJSON(w, 200, convertUserResponse(user))
+	respondWithJSON(w, 201, convertUserResponse(user))
 }
 
-func (apiCfg *apiConfig) HandlerGetUser(w http.ResponseWriter, r *http.Request) {
-	apiKey, err := auth.GetApiKey(r.Header)
-	if err != nil {
-		log.Println("Unable to get API key as:", err)
-		respondWithError(w, 403, "Unauthorized")
-		return
-	}
-
-	user, err := apiCfg.DB.GetUserByAPIKey(r.Context(), apiKey)
-	if err != nil {
-		log.Println("Unable to get user as:", err)
-		respondWithError(w, 403, "Unauthorized")
-		return
-	}
-
+func (apiCfg *apiConfig) HandlerGetUser(w http.ResponseWriter, r *http.Request, user database.User) {
 	respondWithJSON(w, 200, convertUserResponse(user))
 }

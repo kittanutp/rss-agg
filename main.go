@@ -53,9 +53,14 @@ func main() {
 
 	userRouter := chi.NewRouter()
 	userRouter.Post("/new", apiCfg.HandlerCreateUser)
-	userRouter.Get("/info", apiCfg.HandlerGetUser)
+	userRouter.Get("/info", apiCfg.middlewareAuth(apiCfg.HandlerGetUser))
+
+	feedRouter := chi.NewRouter()
+	feedRouter.Post("/new", apiCfg.middlewareAuth(apiCfg.HandlerCreateFeed))
+	feedRouter.Get("/all", apiCfg.HandlerGetFeeds)
 
 	r.Mount("/user", userRouter)
+	r.Mount("/feed", feedRouter)
 
 	srv := &http.Server{
 		Addr:           ":" + portString,
