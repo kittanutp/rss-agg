@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -24,22 +25,24 @@ func convertUserResponse(user database.User) User {
 }
 
 type Feed struct {
-	ID        uuid.UUID `json:"id"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	Name      string    `json:"name"`
-	Url       string    `json:"url"`
-	UserID    uuid.UUID `json:"user_id"`
+	ID          uuid.UUID  `json:"id"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
+	Name        string     `json:"name"`
+	Url         string     `json:"url"`
+	UserID      uuid.UUID  `json:"user_id"`
+	LastFetchAt *time.Time `json:"last_fetch_at"`
 }
 
 func convertFeedResponse(feed database.Feed) Feed {
 	return Feed{
-		ID:        feed.ID,
-		CreatedAt: feed.CreatedAt,
-		UpdatedAt: feed.UpdatedAt,
-		Name:      feed.Name,
-		Url:       feed.Url,
-		UserID:    feed.UserID,
+		ID:          feed.ID,
+		CreatedAt:   feed.CreatedAt,
+		UpdatedAt:   feed.UpdatedAt,
+		Name:        feed.Name,
+		Url:         feed.Url,
+		UserID:      feed.UserID,
+		LastFetchAt: nullTimeToTimePtr(feed.LastFetchAt),
 	}
 }
 
@@ -58,21 +61,30 @@ func convertFollowResponse(folow database.FeedFollow) Follow {
 }
 
 type FollowFeed struct {
-	ID        uuid.UUID `json:"id"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	Name      string    `json:"name"`
-	Url       string    `json:"url"`
-	UserID    uuid.UUID `json:"user_id"`
+	ID          uuid.UUID  `json:"id"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
+	Name        string     `json:"name"`
+	Url         string     `json:"url"`
+	UserID      uuid.UUID  `json:"user_id"`
+	LastFetchAt *time.Time `json:"last_fetch_at"`
 }
 
 func convertFollowFeedResponse(feed database.GetFollowFeedsRow) Feed {
 	return Feed{
-		ID:        feed.ID,
-		CreatedAt: feed.CreatedAt,
-		UpdatedAt: feed.UpdatedAt,
-		Name:      feed.Name,
-		Url:       feed.Url,
-		UserID:    feed.UserID,
+		ID:          feed.ID,
+		CreatedAt:   feed.CreatedAt,
+		UpdatedAt:   feed.UpdatedAt,
+		Name:        feed.Name,
+		Url:         feed.Url,
+		UserID:      feed.UserID,
+		LastFetchAt: nullTimeToTimePtr(feed.LastFetchAt),
 	}
+}
+
+func nullTimeToTimePtr(t sql.NullTime) *time.Time {
+	if t.Valid {
+		return &t.Time
+	}
+	return nil
 }

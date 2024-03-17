@@ -4,7 +4,7 @@
     RETURNING *;
 
 -- name: GetFollowFeeds :many
-    SELECT feeds.id, feeds.user_id,  feeds.name, feeds.url, feeds.created_at, feeds.updated_at
+    SELECT feeds.id, feeds.user_id,  feeds.name, feeds.url, feeds.created_at, feeds.updated_at, feeds.last_fetch_at
     FROM feeds
     JOIN feed_follow ON feed_follow.feed_id = feeds.id
     WHERE feed_follow.user_id = $1;
