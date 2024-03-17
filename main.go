@@ -57,6 +57,9 @@ func main() {
 
 	feedRouter := chi.NewRouter()
 	feedRouter.Post("/new", apiCfg.middlewareAuth(apiCfg.HandlerCreateFeed))
+	feedRouter.Post("/follow", apiCfg.middlewareAuth(apiCfg.HandlerFollow))
+	feedRouter.Get("/follow", apiCfg.middlewareAuth(apiCfg.HandlerGetFollowFeeds))
+	feedRouter.Delete("/follow/{feedFollowID}", apiCfg.middlewareAuth(apiCfg.handlerFeedFollowDelete))
 	feedRouter.Get("/all", apiCfg.HandlerGetFeeds)
 
 	r.Mount("/user", userRouter)
