@@ -48,7 +48,7 @@ func (cfg *apiConfig) HandlerGetFollowFeeds(w http.ResponseWriter, r *http.Reque
 	respondWithJSON(w, 200, resp_feeds)
 }
 
-func (cfg *apiConfig) handlerFeedFollowDelete(w http.ResponseWriter, r *http.Request, user database.User) {
+func (cfg *apiConfig) HandlerFeedFollowDelete(w http.ResponseWriter, r *http.Request, user database.User) {
 	feedFollowIDStr := chi.URLParam(r, "feedFollowID")
 	feedFollowID, err := uuid.Parse(feedFollowIDStr)
 	if err != nil {

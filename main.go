@@ -59,11 +59,15 @@ func main() {
 	feedRouter.Post("/new", cfg.middlewareAuth(cfg.HandlerCreateFeed))
 	feedRouter.Post("/follow", cfg.middlewareAuth(cfg.HandlerFollow))
 	feedRouter.Get("/follow", cfg.middlewareAuth(cfg.HandlerGetFollowFeeds))
-	feedRouter.Delete("/follow/{feedFollowID}", cfg.middlewareAuth(cfg.handlerFeedFollowDelete))
+	feedRouter.Delete("/follow/{feedFollowID}", cfg.middlewareAuth(cfg.HandlerFeedFollowDelete))
 	feedRouter.Get("/all", cfg.HandlerGetFeeds)
+
+	postRouter := chi.NewRouter()
+	postRouter.Get("/all", cfg.middlewareAuth(cfg.HandlerPostsGet))
 
 	r.Mount("/user", userRouter)
 	r.Mount("/feed", feedRouter)
+	r.Mount("/post", postRouter)
 
 	srv := &http.Server{
 		Addr:           ":" + portString,
