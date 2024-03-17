@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -16,15 +15,9 @@ func (apiCfg *apiConfig) HandlerCreateFeed(w http.ResponseWriter, r *http.Reques
 		Name string `json:"name"`
 		Url  string `json:"url"`
 	}
-	decoder := json.NewDecoder(r.Body)
 
 	params := parameter{}
-	err := decoder.Decode(&params)
-	if err != nil {
-		log.Println("Unable to decode json as:", err)
-		respondWithError(w, 400, fmt.Sprintf("Unable to decode json as: %v", err))
-		return
-	}
+	decodeJSON(w, r, &params)
 
 	feed, feed_err := apiCfg.DB.CreateFeed(r.Context(), database.CreateFeedParams{
 		ID:        uuid.New(),
@@ -44,23 +37,9 @@ func (apiCfg *apiConfig) HandlerCreateFeed(w http.ResponseWriter, r *http.Reques
 }
 
 func (apiCfg *apiConfig) HandlerGetFeeds(w http.ResponseWriter, r *http.Request) {
-	// type parameter struct {
-	// 	Name string `json:"name"`
-	// 	Url  string `json:"url"`
-	// }
-	// decoder := json.NewDecoder(r.Body)
-
-	// params := parameter{}
-	// err := decoder.Decode(&params)
-	// if err != nil {
-	// 	log.Println("Unable to decode json as:", err)
-	// 	respondWithError(w, 400, fmt.Sprintf("Unable to decode json as: %v", err))
-	// 	return
-	// }
-
 	feeds, feed_err := apiCfg.DB.GetFeeds(r.Context())
 	if feed_err != nil {
-		log.Println("Unable to create feed as:", feed_err)
+		log.Println("Unable to get feeds as:", feed_err)
 		respondWithError(w, 400, fmt.Sprintf("Unable to get feeds as: %v", feed_err))
 		return
 	}

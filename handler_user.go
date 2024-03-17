@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -15,15 +14,9 @@ func (apiCfg *apiConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Reques
 	type parameter struct {
 		Name string `json:"name"`
 	}
-	decoder := json.NewDecoder(r.Body)
 
 	params := parameter{}
-	err := decoder.Decode(&params)
-	if err != nil {
-		log.Println("Unable to decode json as:", err)
-		respondWithError(w, 400, fmt.Sprintf("Unable to decode json as: %v", err))
-		return
-	}
+	decodeJSON(w, r, &params)
 
 	user, user_err := apiCfg.DB.CreateUser(r.Context(), database.CreateUserParams{
 		ID:        uuid.New(),

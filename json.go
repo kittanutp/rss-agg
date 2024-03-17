@@ -27,3 +27,14 @@ func respondWithError(w http.ResponseWriter, code int, msg string) {
 	}
 	respondWithJSON(w, code, errResponse{Error: err_msg})
 }
+
+func decodeJSON(w http.ResponseWriter, r *http.Request, target interface{}) {
+	decoder := json.NewDecoder(r.Body)
+	defer r.Body.Close()
+
+	if err := decoder.Decode(target); err != nil {
+		log.Println("Unable to decode JSON:", err)
+		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Unable to decode JSON: %v", err))
+	}
+
+}
