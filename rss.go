@@ -34,16 +34,16 @@ func startScraping(
 	concurrency int,
 	timeBetweenRequest time.Duration,
 ) {
-	log.Printf("Collecting feeds every %s on %v goroutines...", timeBetweenRequest, concurrency)
+	log.Printf("Collect feeds every %s on %v goroutines...", timeBetweenRequest, concurrency)
 	ticker := time.NewTicker(timeBetweenRequest)
 
 	for ; ; <-ticker.C {
 		feeds, err := db.GetNextFeedsToFetch(context.Background(), int32(concurrency))
 		if err != nil {
-			log.Println("Couldn't get next feeds to fetch", err)
+			log.Println("Unable to get next feeds to fetch", err)
 			continue
 		}
-		log.Printf("Found %v feeds to fetch!", len(feeds))
+		log.Printf("Fetch %v feed(s)", len(feeds))
 
 		wg := &sync.WaitGroup{}
 		for _, feed := range feeds {
@@ -62,13 +62,13 @@ func scrapeFeed(
 	defer wg.Done()
 	_, err := db.MarkFeedFetched(context.Background(), feed.ID)
 	if err != nil {
-		log.Printf("Couldn't mark feed %s fetched: %v", feed.Name, err)
+		log.Printf("Unable to mark feed %s fetched: %v", feed.Name, err)
 		return
 	}
 
 	feedData, err := fetchFeed(feed.Url)
 	if err != nil {
-		log.Printf("Couldn't collect feed %s: %v", feed.Name, err)
+		log.Printf("Unable to collect feed %s: %v", feed.Name, err)
 		return
 	}
 	for _, item := range feedData.Channel.Item {
